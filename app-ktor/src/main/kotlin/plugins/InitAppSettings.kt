@@ -1,10 +1,10 @@
-package ru.shvets.subscriber.bot.app.ktor.plugins
+package ru.shvets.telegram.bot.app.ktor.plugins
 
 import io.ktor.server.application.*
-import ru.shvets.subscriber.bot.app.ktor.config.AppSettings
-import ru.shvets.subscriber.bot.app.ktor.config.PostgresConfig
-import ru.shvets.subscriber.bot.app.ktor.config.TelegramConfig
-import ru.shvets.subscriber.bot.repo.postgresql.service.UserService
+import ru.shvets.telegram.bot.app.ktor.config.AppSettings
+import ru.shvets.telegram.bot.app.ktor.config.PostgresConfig
+import ru.shvets.telegram.bot.app.ktor.config.TelegramConfig
+import ru.shvets.telegram.bot.repo.postgresql.service.UserService
 
 fun Application.initAppSettings(): AppSettings {
     return AppSettings(

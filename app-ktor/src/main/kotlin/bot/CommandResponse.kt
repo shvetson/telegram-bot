@@ -1,13 +1,10 @@
-package ru.shvets.subscriber.bot.app.ktor.bot
+package ru.shvets.telegram.bot.app.ktor.bot
 
 import com.vdurmont.emoji.EmojiParser
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText
-import org.telegram.telegrambots.meta.api.objects.User
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton
-import ru.shvets.subscriber.bot.common.helper.HELP_TEXT
-import ru.shvets.subscriber.bot.common.helper.SORRY_TEXT
+import ru.shvets.telegram.bot.common.helper.HELP_TEXT
+import ru.shvets.telegram.bot.common.helper.SORRY_TEXT
 
 /**
  * @author  Oleg Shvets

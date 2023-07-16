@@ -1,5 +1,6 @@
-package ru.shvets.subscriber.bot.app.ktor.bot
+package ru.shvets.telegram.bot.app.ktor.bot
 
+import com.vdurmont.emoji.EmojiParser
 import org.telegram.telegrambots.meta.api.methods.ParseMode
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
@@ -10,6 +11,16 @@ fun getButton(text: String, callbackData: String): InlineKeyboardButton {
     val button = InlineKeyboardButton()
     button.apply {
         this.text = text
+        this.callbackData = callbackData
+    }
+    return button
+}
+
+fun getButtonWithEmoji(text: String, callbackData: String, emoji: String): InlineKeyboardButton {
+    val button = InlineKeyboardButton()
+    val str = EmojiParser.parseToUnicode("$emoji $text ")
+    button.apply {
+        this.text = str
         this.callbackData = callbackData
     }
     return button

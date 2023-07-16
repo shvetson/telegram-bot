@@ -1,4 +1,4 @@
-package ru.shvets.subscriber.bot.app.ktor.bot
+package ru.shvets.telegram.bot.app.ktor.bot
 
 /**
  * @author  Oleg Shvets

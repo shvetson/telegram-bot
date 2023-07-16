@@ -1,4 +1,4 @@
-package ru.shvets.subscriber.bot.repo.postgresql
+package ru.shvets.telegram.bot.repo.postgresql
 
 open class SqlProperties(
     val url: String = "jdbc:postgresql://localhost:5432/tgbots",

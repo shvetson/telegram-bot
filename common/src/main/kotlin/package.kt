@@ -1,1 +1,1 @@
-package ru.shvets.subscriber.bot.common
+package ru.shvets.telegram.bot.common

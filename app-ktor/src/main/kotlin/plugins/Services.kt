@@ -1,11 +1,10 @@
-package ru.shvets.subscriber.bot.app.ktor.plugins
+package ru.shvets.telegram.bot.app.ktor.plugins
 
 import io.ktor.server.application.*
-import kotlinx.coroutines.runBlocking
 import org.telegram.telegrambots.meta.TelegramBotsApi
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession
-import ru.shvets.subscriber.bot.app.ktor.bot.BotService
-import ru.shvets.subscriber.bot.app.ktor.config.AppSettings
+import ru.shvets.telegram.bot.app.ktor.bot.BotService
+import ru.shvets.telegram.bot.app.ktor.config.AppSettings
 import java.util.*
 
 /**

@@ -1,4 +1,4 @@
-package ru.shvets.subscriber.bot.repo.postgresql.service
+package ru.shvets.telegram.bot.repo.postgresql.service
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -7,13 +7,12 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
-import ru.shvets.subscriber.bot.common.model.ChatId
-import ru.shvets.subscriber.bot.common.model.User
-import ru.shvets.subscriber.bot.common.repo.UserRepository
-import ru.shvets.subscriber.bot.log.Logger
-import ru.shvets.subscriber.bot.repo.postgresql.SqlProperties
-import ru.shvets.subscriber.bot.repo.postgresql.entity.UserTable
-import ru.shvets.subscriber.bot.repo.postgresql.entity.UserTable.fromRow
+import ru.shvets.telegram.bot.common.model.ChatId
+import ru.shvets.telegram.bot.common.model.User
+import ru.shvets.telegram.bot.common.repo.UserRepository
+import ru.shvets.telegram.bot.log.Logger
+import ru.shvets.telegram.bot.repo.postgresql.entity.UserTable
+import ru.shvets.telegram.bot.repo.postgresql.entity.UserTable.fromRow
 
 /**
  * @author  Oleg Shvets

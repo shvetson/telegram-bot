@@ -1,7 +1,7 @@
-package ru.shvets.subscriber.bot.common.repo
+package ru.shvets.telegram.bot.common.repo
 
-import ru.shvets.subscriber.bot.common.model.ChatId
-import ru.shvets.subscriber.bot.common.model.User
+import ru.shvets.telegram.bot.common.model.ChatId
+import ru.shvets.telegram.bot.common.model.User
 
 /**
  * @author  Oleg Shvets

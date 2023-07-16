@@ -1,4 +1,4 @@
-package ru.shvets.subscriber.bot.app.ktor.plugins
+package ru.shvets.telegram.bot.app.ktor.plugins
 
 import io.ktor.server.routing.*
 import io.ktor.server.application.*

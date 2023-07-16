@@ -1,4 +1,4 @@
-package ru.shvets.subscriber.bot.repo.postgresql.entity
+package ru.shvets.telegram.bot.repo.postgresql.entity
 
 import kotlinx.datetime.*
 import org.jetbrains.exposed.sql.Column
@@ -6,9 +6,9 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.javatime.datetime
 import org.jetbrains.exposed.sql.statements.UpdateBuilder
-import ru.shvets.subscriber.bot.common.helper.NONE
-import ru.shvets.subscriber.bot.common.model.ChatId
-import ru.shvets.subscriber.bot.common.model.User
+import ru.shvets.telegram.bot.common.helper.NONE
+import ru.shvets.telegram.bot.common.model.ChatId
+import ru.shvets.telegram.bot.common.model.User
 import java.time.LocalDateTime
 
 /**

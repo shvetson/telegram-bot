@@ -1,4 +1,4 @@
-package ru.shvets.subscriber.bot.common.helper
+package ru.shvets.telegram.bot.common.helper
 
 import kotlinx.datetime.Instant
 

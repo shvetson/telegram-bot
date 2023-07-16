@@ -1,4 +1,4 @@
-package ru.shvets.subscriber.bot.app.ktor.plugins
+package ru.shvets.telegram.bot.app.ktor.plugins
 
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.plugins.contentnegotiation.*

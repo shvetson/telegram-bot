@@ -1,4 +1,4 @@
-package ru.shvets.subscriber.bot.common.model
+package ru.shvets.telegram.bot.common.model
 
 import kotlinx.serialization.Serializable
 import kotlin.jvm.JvmInline

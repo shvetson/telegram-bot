@@ -1,9 +1,9 @@
-package ru.shvets.subscriber.bot.app.ktor
+package ru.shvets.telegram.bot.app.ktor
 
 import io.ktor.server.application.*
-import ru.shvets.subscriber.bot.app.ktor.config.AppSettings
-import ru.shvets.subscriber.bot.app.ktor.config.DatabaseFactory
-import ru.shvets.subscriber.bot.app.ktor.plugins.*
+import ru.shvets.telegram.bot.app.ktor.config.AppSettings
+import ru.shvets.telegram.bot.app.ktor.config.DatabaseFactory
+import ru.shvets.telegram.bot.app.ktor.plugins.*
 
 fun main(args: Array<String>): Unit =
     io.ktor.server.cio.EngineMain.main(args)

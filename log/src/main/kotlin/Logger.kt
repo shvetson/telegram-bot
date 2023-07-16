@@ -1,4 +1,4 @@
-package ru.shvets.subscriber.bot.log
+package ru.shvets.telegram.bot.log
 
 import org.slf4j.Logger // вручную указать импортируемую библиотеку
 import org.slf4j.LoggerFactory

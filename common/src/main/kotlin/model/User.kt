@@ -1,7 +1,7 @@
-package ru.shvets.subscriber.bot.common.model
+package ru.shvets.telegram.bot.common.model
 
 import kotlinx.datetime.Instant
-import ru.shvets.subscriber.bot.common.helper.NONE
+import ru.shvets.telegram.bot.common.helper.NONE
 
 /**
  * @author  Oleg Shvets

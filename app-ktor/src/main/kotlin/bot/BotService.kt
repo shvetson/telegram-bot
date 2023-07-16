@@ -1,4 +1,4 @@
-package ru.shvets.subscriber.bot.app.ktor.bot
+package ru.shvets.telegram.bot.app.ktor.bot
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands
@@ -7,11 +7,11 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import org.telegram.telegrambots.meta.api.objects.Update
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault
-import ru.shvets.subscriber.bot.app.ktor.config.AppSettings
-import ru.shvets.subscriber.bot.repo.postgresql.service.UserService
-import ru.shvets.subscriber.bot.common.helper.*
-import ru.shvets.subscriber.bot.common.repo.UserRepository
-import ru.shvets.subscriber.bot.log.Logger
+import ru.shvets.telegram.bot.app.ktor.config.AppSettings
+import ru.shvets.telegram.bot.repo.postgresql.service.UserService
+import ru.shvets.telegram.bot.common.helper.*
+import ru.shvets.telegram.bot.common.repo.UserRepository
+import ru.shvets.telegram.bot.log.Logger
 
 /**
  * @author  Oleg Shvets
@@ -40,10 +40,10 @@ class BotService(appSettings: AppSettings) : TelegramLongPollingBot(), Logger {
         } else if (update?.hasCallbackQuery() == true) {
 
             val callbackQuery = update.callbackQuery
-            val cmd = callbackQuery.data
+            val data = callbackQuery.data
             val message = callbackQuery.message
 
-            when (val msg = getCallBackCommandResponse(cmd, message)) {
+            when (val msg = getCallBackCommandResponse(data, message)) {
                 is SendMessage -> execute(msg as SendMessage)
                 is EditMessageText -> execute(msg as EditMessageText)
             }

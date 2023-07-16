@@ -1,1 +1,1 @@
-package ru.shvets.subscriber.bot.app.ktor
+package ru.shvets.telegram.bot.app.ktor

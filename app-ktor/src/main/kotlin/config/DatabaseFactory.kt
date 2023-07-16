@@ -1,15 +1,13 @@
-package ru.shvets.subscriber.bot.app.ktor.config
+package ru.shvets.telegram.bot.app.ktor.config
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.transaction
-import ru.shvets.subscriber.bot.repo.postgresql.entity.UserTable
+import ru.shvets.telegram.bot.repo.postgresql.entity.UserTable
 
 /**
  * @author  Oleg Shvets

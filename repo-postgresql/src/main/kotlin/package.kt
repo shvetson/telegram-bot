@@ -1,1 +1,1 @@
-package ru.shvets.subscriber.bot.repo.postgresql
+package ru.shvets.telegram.bot.repo.postgresql

@@ -1,1 +1,1 @@
-package ru.shvets.subscriber.bot.log
+package ru.shvets.telegram.bot.log
