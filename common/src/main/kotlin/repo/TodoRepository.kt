@@ -15,5 +15,5 @@ interface TodoRepository {
     suspend fun read(todoId: TodoId): Todo?
     suspend fun update(todo: Todo)
     suspend fun delete(todoId: TodoId): Boolean
-    suspend fun search(todoId: TodoId? = null): List<Todo>
+    suspend fun search(userId: Int? = null): List<Todo>
 }

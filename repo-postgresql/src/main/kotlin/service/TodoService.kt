@@ -43,9 +43,9 @@ class TodoService(
         TODO("Not yet implemented")
     }
 
-    override suspend fun search(todoId: TodoId?): List<Todo> = dbQuery {
+    override suspend fun search(userId: Int?): List<Todo> = dbQuery {
         val result = TodoTable.selectAll()
-        todoId?.let { result.andWhere { TodoTable.id eq todoId.asString().toLong() } }
+        userId?.let { result.andWhere { TodoTable.userId eq userId.toString() } }
         result.orderBy(TodoTable.id).map(::fromRow)
     }
 

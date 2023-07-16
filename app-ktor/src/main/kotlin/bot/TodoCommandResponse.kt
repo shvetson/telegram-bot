@@ -1,8 +1,11 @@
 package ru.shvets.telegram.bot.app.ktor.bot
 
+import io.kotest.common.runBlocking
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toJavaLocalDateTime
+import kotlinx.datetime.toLocalDateTime
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.telegram.telegrambots.meta.api.methods.ParseMode
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText
 import org.telegram.telegrambots.meta.api.objects.Message
@@ -12,12 +15,14 @@ import ru.shvets.telegram.bot.common.model.Todo
 import ru.shvets.telegram.bot.common.model.TodoId
 import ru.shvets.telegram.bot.common.model.TodoStatusType
 import ru.shvets.telegram.bot.common.repo.TodoRepository
+import java.lang.StringBuilder
+import java.time.format.DateTimeFormatter
 
 fun getTodoCommandResponse(
     callbackCommand: String,
     message: Message,
-    todoService: TodoRepository,
     todoItemStep: MutableMap<Long, Todo>,
+    todoService: TodoRepository,
 ): Any {
     val chatId = message.chat.id.toString()
     val messageId = message.messageId
@@ -26,12 +31,12 @@ fun getTodoCommandResponse(
     return when (callbackCommand) {
         CommandTodo.LIST.command -> {
             log.info("Request to get all items")
-//            sendMessage(chatId, "Command get all list")
+            handleListCommand(chatId, messageId, todoService)
         }
 
         CommandTodo.CREATE.command -> {
             log.info("Request to create a new item")
-            handleCreateCommand(chatId, messageId, todoService, todoItemStep)
+            handleCreateCommand(chatId, messageId, todoItemStep)
         }
 
 //        CommandTodo.READ.command -> {
@@ -52,30 +57,31 @@ fun getTodoCommandResponse(
     }
 }
 
-//private fun handleStartCommand(chatId: String, firstName: String): SendMessage {
-//    val text = EmojiParser
-//        .parseToUnicode("Привет, _${firstName}_! :wave: Я - Telegram bot :blush: \n*Доступные команды:*")
-//    return sendMessage(chatId, text, getInlineKeyboard())
-//}
-
 private fun handleNotFoundCommand(chatId: String): SendMessage {
-    return sendMessage(chatId, "*$SORRY_TEXT*")
+    return sendMessage(chatId = chatId, text = "*$SORRY_TEXT*")
 }
 
-private fun handleCreateCommand(
-    chatId: String,
-    messageId: Int,
-    todoService: TodoRepository,
-    todoItemStep: MutableMap<Long, Todo>,
-): EditMessageText {
-    val editMessageText = EditMessageText()
-    editMessageText.apply {
-        text = "Send *Title*"
-        this.chatId = chatId
-        this.messageId = messageId
-        parseMode = ParseMode.MARKDOWN
-    }
+private fun handleListCommand(chatId: String, messageId: Int, todoService: TodoRepository): EditMessageText {
+    val sb = StringBuilder()
+    var counter = 0
 
+    val list = runBlocking { todoService.search(chatId.toInt()) }
+    for (item in list) {
+        counter += 1
+        sb.append("$counter \n")
+            .append("${item.title}\n")
+            .append("${item.content}\n")
+            .append(item.createdAt
+                            .toLocalDateTime(TimeZone.currentSystemDefault())
+                            .toJavaLocalDateTime()
+                            .format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")))
+            .append(" /todos_${item.id.asString()}\n\n")
+    }
+    return editMessageText(chatId = chatId, text = sb.toString(), messageId = messageId)
+}
+
+private fun handleCreateCommand(chatId: String, messageId: Int, todoItemStep: MutableMap<Long, Todo>): EditMessageText {
+    val editMessageText = editMessageText(chatId, "Send *Title* ->", messageId)
     Context.status = TodoStatusType.TITLE
 
     val todo = Todo(

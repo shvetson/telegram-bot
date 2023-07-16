@@ -8,14 +8,19 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import org.telegram.telegrambots.meta.api.objects.Update
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
 import ru.shvets.telegram.bot.app.ktor.config.AppSettings
-import ru.shvets.telegram.bot.common.helper.*
+import ru.shvets.telegram.bot.common.helper.HELP_LABEL
+import ru.shvets.telegram.bot.common.helper.SET_LABEL
+import ru.shvets.telegram.bot.common.helper.START_LABEL
 import ru.shvets.telegram.bot.common.model.Context
 import ru.shvets.telegram.bot.common.model.Todo
 import ru.shvets.telegram.bot.common.model.TodoStatusType
 import ru.shvets.telegram.bot.common.repo.TodoRepository
 import ru.shvets.telegram.bot.log.Logger
 import ru.shvets.telegram.bot.repo.postgresql.service.TodoService
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 /**
  * @author  Oleg Shvets
@@ -33,11 +38,12 @@ class BotService(appSettings: AppSettings) : TelegramLongPollingBot(), Logger {
 
     override fun onUpdateReceived(update: Update?) {
         val chatId = update?.message?.chat?.id.toString()
+        val patternTodoCommand: Pattern = Pattern.compile("^/todos")
 
         if (update?.hasMessage() == true && update.message?.hasText() == true) {
-
             val text = update.message.text.lowercase()
             val firstName = update.message.chat.firstName
+            val matcherTodoCommand: Matcher = patternTodoCommand.matcher(text)
 
             if (todoItemStep.containsKey(chatId.toLong())) {
                 if (Context.status == TodoStatusType.TITLE) {
@@ -45,7 +51,7 @@ class BotService(appSettings: AppSettings) : TelegramLongPollingBot(), Logger {
                     todoItem?.title = text
 
                     Context.status = TodoStatusType.CONTENT
-                    execute(sendMessage(chatId, "Send *Content*"))
+                    execute(sendMessage(chatId, "*Title*: $text\nSend *Content* ->"))
                 } else if (Context.status == TodoStatusType.CONTENT) {
                     val todoItem = todoItemStep[chatId.toLong()]
                     todoItem?.content = text
@@ -54,30 +60,34 @@ class BotService(appSettings: AppSettings) : TelegramLongPollingBot(), Logger {
                     todoItemStep.clear()
 
                     runBlocking { todoItem?.let { todoService.create(it) } }
-                    execute(sendMessage(chatId, "Item added"))
+                    val msg = "*Title*: ${todoItem?.title}\n*Content*: $text\nCreate Todo finished."
+                    val sendMessage = sendMessage(chatId = chatId, text = msg, keyboard = getInlineKeyboardTodoAndMenu())
+                    execute(sendMessage)
                 }
+            } else if (matcherTodoCommand.find()) {
+                val id = text.substring(6)
+                execute(sendMessage(chatId, id))
+                //TODO добавить меню - read, update, delete
             } else {
-                val sendMessage = getCommandResponse(text, firstName, chatId)
+                val sendMessage = getCommandResponse(chatId = chatId, text = text, firstName = firstName)
                 execute(sendMessage)
             }
 
         } else if (update?.hasCallbackQuery() == true) {
-
             val callbackQuery = update.callbackQuery
             val data = callbackQuery.data
             val message = callbackQuery.message
 
-            when (val msg = getCallBackCommandResponse(data, message, todoService, todoItemStep)) {
+            when (val msg = getCallBackCommandResponse(data = data, message = message, todoItemStep = todoItemStep, todoService = todoService)) {
                 is SendMessage -> execute(msg as SendMessage)
                 is EditMessageText -> execute(msg as EditMessageText)
             }
         } else if (update?.hasMessage() == true && update.message?.hasDocument() == true) {
-
             val file = update.message.document
             val name = file.fileName
             val size = file.fileSize
 
-            execute(sendMessage(chatId, "File - $name\nSize - $size"))
+            execute(sendMessage(chatId = chatId, text = "File - $name\nSize - $size"))
         }
     }
 
@@ -88,4 +98,13 @@ class BotService(appSettings: AppSettings) : TelegramLongPollingBot(), Logger {
         listOfCommands.add(BotCommand(Command.SET.command, SET_LABEL))
         execute(SetMyCommands(listOfCommands, BotCommandScopeDefault(), null))
     }
+}
+
+private fun getInlineKeyboardTodoAndMenu(): InlineKeyboardMarkup {
+    val menuButton = getButton(text = "Go to Todos", callbackData = CallbackCommand.MENU_TODO.command)
+    val todoListButton = getButtonWithEmoji("ToDo List", CommandTodo.LIST.command, ":ledger:")
+
+    val rowButtons = getRow(menuButton, todoListButton)
+    val collection = getCollection(rowButtons)
+    return getKeyboard(collection)
 }

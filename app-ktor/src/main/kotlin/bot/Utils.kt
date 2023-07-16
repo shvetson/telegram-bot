@@ -3,6 +3,7 @@ package ru.shvets.telegram.bot.app.ktor.bot
 import com.vdurmont.emoji.EmojiParser
 import org.telegram.telegrambots.meta.api.methods.ParseMode
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton
@@ -44,15 +45,29 @@ fun getKeyboard(collection: List<List<InlineKeyboardButton>>): InlineKeyboardMar
     return inlineKeyboardMarkup
 }
 
-fun sendMessage(chatId: String, message: String, keyboard: Any? = null): SendMessage {
-    val sendMessage = SendMessage(chatId, message)
-    sendMessage.parseMode = ParseMode.MARKDOWN
-    sendMessage.disableWebPagePreview
-    sendMessage.replyMarkup =
-        when (keyboard) {
-            is InlineKeyboardMarkup -> keyboard as InlineKeyboardMarkup
-            is ReplyKeyboardMarkup -> keyboard as ReplyKeyboardMarkup
-            else -> null
-        }
+fun sendMessage(chatId: String, text: String, keyboard: Any? = null): SendMessage {
+    val sendMessage = SendMessage(chatId, text)
+    sendMessage.apply {
+        parseMode = ParseMode.MARKDOWN
+        disableWebPagePreview
+        replyMarkup =
+            when (keyboard) {
+                is InlineKeyboardMarkup -> keyboard as InlineKeyboardMarkup
+                is ReplyKeyboardMarkup -> keyboard as ReplyKeyboardMarkup
+                else -> null
+            }
+    }
     return sendMessage
+}
+
+fun editMessageText(chatId: String, text: String, messageId: Int, keyboard: InlineKeyboardMarkup? = null): EditMessageText {
+    val editMessageText = EditMessageText()
+    editMessageText.apply {
+        this.text = text
+        this.chatId = chatId
+        this.messageId = messageId
+        parseMode = ParseMode.MARKDOWN
+        replyMarkup = keyboard
+    }
+    return editMessageText
 }

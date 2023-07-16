@@ -1,6 +1,5 @@
 package ru.shvets.telegram.bot.app.ktor.bot
 
-import org.telegram.telegrambots.meta.api.methods.ParseMode
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText
 import org.telegram.telegrambots.meta.api.objects.Message
@@ -11,21 +10,21 @@ import ru.shvets.telegram.bot.common.repo.TodoRepository
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-fun getCallBackCommandResponse(data: String, message: Message, todoService: TodoRepository, todoItemStep: MutableMap<Long, Todo>): Any {
+fun getCallBackCommandResponse(data: String, message: Message, todoItemStep: MutableMap<Long, Todo>, todoService: TodoRepository): Any {
     val chatId = message.chat.id.toString()
     val messageId = message.messageId
 
     val patternTodoCommand: Pattern = Pattern.compile("^/todos/")
-    val matcherTimeCommand: Matcher = patternTodoCommand.matcher(data)
-    val cmd  = if (matcherTimeCommand.find()) CallbackCommand.TODO.command else data
+    val matcherTodoCommand: Matcher = patternTodoCommand.matcher(data)
+    val cmd  = if (matcherTodoCommand.find()) CallbackCommand.TODO.command else data
 
     return when (cmd) {
-        CallbackCommand.MENU.command -> {
-            handleMenuCommand(chatId, messageId)
+        CallbackCommand.MENU_TODO.command -> {
+            handleMenuTodoCommand(chatId, messageId)
         }
 
         CallbackCommand.TODO.command -> {
-            getTodoCommandResponse(data, message, todoService, todoItemStep)
+            getTodoCommandResponse(data, message, todoItemStep, todoService)
         }
 
         else -> {
@@ -35,22 +34,14 @@ fun getCallBackCommandResponse(data: String, message: Message, todoService: Todo
 }
 
 private fun handleNotFoundCommand(chatId: String): SendMessage {
-    return sendMessage(chatId, "*$SORRY_TEXT*")
+    return sendMessage(chatId = chatId, text = "*$SORRY_TEXT*")
 }
 
-private fun handleMenuCommand(chatId: String, messageId: Int): EditMessageText {
-    val editMessageText = EditMessageText()
-    editMessageText.apply {
-        text = "*Todo service*"
-        this.chatId = chatId
-        this.messageId = messageId
-        parseMode = ParseMode.MARKDOWN
-        replyMarkup = getInlineKeyboardMenu()
-    }
-    return editMessageText
+private fun handleMenuTodoCommand(chatId: String, messageId: Int): EditMessageText {
+    return editMessageText(chatId = chatId, text = "*Todo service*", messageId = messageId, keyboard = getInlineKeyboardTodoCommand())
 }
 
-private fun getInlineKeyboardMenu(): InlineKeyboardMarkup {
+private fun getInlineKeyboardTodoCommand(): InlineKeyboardMarkup {
     val todoListButton = getButtonWithEmoji("ToDo List", CommandTodo.LIST.command, ":ledger:")
     val todoCreateItemButton = getButtonWithEmoji("Create New", CommandTodo.CREATE.command, ":new:")
 

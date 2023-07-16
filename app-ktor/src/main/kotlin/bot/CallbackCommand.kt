@@ -7,6 +7,6 @@ package ru.shvets.telegram.bot.app.ktor.bot
  */
 
 enum class CallbackCommand(val command: String) {
-    MENU("menu"),
+    MENU_TODO("menu-todo"),
     TODO("/todo"),
 }
