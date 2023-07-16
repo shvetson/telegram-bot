@@ -9,10 +9,10 @@ import ru.shvets.telegram.bot.common.helper.NONE
  * @date  23.06.2023 21:02
  */
 
-data class User(
-    val chatId: ChatId = ChatId.NONE,
-    val firstName: String = "",
-    val lastName: String = "",
-    val userName: String = "",
-    val registeredAt: Instant = Instant.NONE
+data class Todo(
+    val id: TodoId = TodoId.NONE,
+    var title: String = "",
+    var content: String = "",
+    val createdAt: Instant = Instant.NONE,
+    val userId: Long = 0L
 )

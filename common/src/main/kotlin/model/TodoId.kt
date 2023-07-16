@@ -11,10 +11,10 @@ import kotlin.jvm.JvmInline
 
 @Serializable
 @JvmInline
-value class ChatId(private val id: String){
+value class TodoId(private val id: String){
     fun asString() = id
 
     companion object {
-        val NONE = ChatId("")
+        val NONE = TodoId("")
     }
 }

@@ -4,14 +4,14 @@ import io.ktor.server.application.*
 import ru.shvets.telegram.bot.app.ktor.config.AppSettings
 import ru.shvets.telegram.bot.app.ktor.config.PostgresConfig
 import ru.shvets.telegram.bot.app.ktor.config.TelegramConfig
-import ru.shvets.telegram.bot.repo.postgresql.service.UserService
+import ru.shvets.telegram.bot.repo.postgresql.service.TodoService
 
 fun Application.initAppSettings(): AppSettings {
     return AppSettings(
         db = initAppRepo(),
         bot = initAppTelegram(),
         timerMinutes = environment.config.property("scheduler.minutes").getString().toLong(),
-        repo = listOf(UserService())
+        repo = listOf(TodoService())
     )
 }
 

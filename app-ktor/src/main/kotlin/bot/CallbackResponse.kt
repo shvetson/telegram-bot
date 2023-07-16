@@ -6,10 +6,12 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
 import ru.shvets.telegram.bot.common.helper.SORRY_TEXT
+import ru.shvets.telegram.bot.common.model.Todo
+import ru.shvets.telegram.bot.common.repo.TodoRepository
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-fun getCallBackCommandResponse(data: String, message: Message): Any {
+fun getCallBackCommandResponse(data: String, message: Message, todoService: TodoRepository, todoItemStep: MutableMap<Long, Todo>): Any {
     val chatId = message.chat.id.toString()
     val messageId = message.messageId
 
@@ -23,7 +25,7 @@ fun getCallBackCommandResponse(data: String, message: Message): Any {
         }
 
         CallbackCommand.TODO.command -> {
-            getTodoCommandResponse(data, message)
+            getTodoCommandResponse(data, message, todoService, todoItemStep)
         }
 
         else -> {

@@ -1,5 +1,6 @@
 package ru.shvets.telegram.bot.app.ktor.bot
 
+import kotlinx.coroutines.runBlocking
 import org.telegram.telegrambots.bots.TelegramLongPollingBot
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
@@ -8,10 +9,13 @@ import org.telegram.telegrambots.meta.api.objects.Update
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault
 import ru.shvets.telegram.bot.app.ktor.config.AppSettings
-import ru.shvets.telegram.bot.repo.postgresql.service.UserService
 import ru.shvets.telegram.bot.common.helper.*
-import ru.shvets.telegram.bot.common.repo.UserRepository
+import ru.shvets.telegram.bot.common.model.Context
+import ru.shvets.telegram.bot.common.model.Todo
+import ru.shvets.telegram.bot.common.model.TodoStatusType
+import ru.shvets.telegram.bot.common.repo.TodoRepository
 import ru.shvets.telegram.bot.log.Logger
+import ru.shvets.telegram.bot.repo.postgresql.service.TodoService
 
 /**
  * @author  Oleg Shvets
@@ -21,7 +25,8 @@ import ru.shvets.telegram.bot.log.Logger
 
 class BotService(appSettings: AppSettings) : TelegramLongPollingBot(), Logger {
     private val telegramConfig = appSettings.bot
-//    private val userService = appSettings.repo?.find { it is UserRepository } as UserService
+    private val todoService = appSettings.repo?.find { it is TodoRepository } as TodoService
+    private val todoItemStep: MutableMap<Long, Todo> = mutableMapOf()
 
     override fun getBotToken() = telegramConfig.botToken
     override fun getBotUsername() = telegramConfig.botName
@@ -31,11 +36,30 @@ class BotService(appSettings: AppSettings) : TelegramLongPollingBot(), Logger {
 
         if (update?.hasMessage() == true && update.message?.hasText() == true) {
 
-            val cmd = update.message.text.lowercase()
+            val text = update.message.text.lowercase()
             val firstName = update.message.chat.firstName
 
-            val sendMessage = getCommandResponse(cmd, firstName, chatId)
-            execute(sendMessage)
+            if (todoItemStep.containsKey(chatId.toLong())) {
+                if (Context.status == TodoStatusType.TITLE) {
+                    val todoItem = todoItemStep[chatId.toLong()]
+                    todoItem?.title = text
+
+                    Context.status = TodoStatusType.CONTENT
+                    execute(sendMessage(chatId, "Send *Content*"))
+                } else if (Context.status == TodoStatusType.CONTENT) {
+                    val todoItem = todoItemStep[chatId.toLong()]
+                    todoItem?.content = text
+
+                    Context.status = TodoStatusType.FINISHED
+                    todoItemStep.clear()
+
+                    runBlocking { todoItem?.let { todoService.create(it) } }
+                    execute(sendMessage(chatId, "Item added"))
+                }
+            } else {
+                val sendMessage = getCommandResponse(text, firstName, chatId)
+                execute(sendMessage)
+            }
 
         } else if (update?.hasCallbackQuery() == true) {
 
@@ -43,7 +67,7 @@ class BotService(appSettings: AppSettings) : TelegramLongPollingBot(), Logger {
             val data = callbackQuery.data
             val message = callbackQuery.message
 
-            when (val msg = getCallBackCommandResponse(data, message)) {
+            when (val msg = getCallBackCommandResponse(data, message, todoService, todoItemStep)) {
                 is SendMessage -> execute(msg as SendMessage)
                 is EditMessageText -> execute(msg as EditMessageText)
             }

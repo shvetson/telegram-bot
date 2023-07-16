@@ -7,7 +7,7 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.transaction
-import ru.shvets.telegram.bot.repo.postgresql.entity.UserTable
+import ru.shvets.telegram.bot.repo.postgresql.entity.TodoTable
 
 /**
  * @author  Oleg Shvets
@@ -34,9 +34,9 @@ object DatabaseFactory {
 
         transaction {
             addLogger(StdOutSqlLogger)
-            SchemaUtils.create(UserTable)
-            SchemaUtils.drop(UserTable)
-            SchemaUtils.createMissingTablesAndColumns(UserTable)
+            SchemaUtils.create(TodoTable)
+//            SchemaUtils.drop(TodoTable)
+            SchemaUtils.createMissingTablesAndColumns(TodoTable)
         }
     }
 }
