@@ -2,10 +2,8 @@ package ru.shvets.telegram.bot.repo.postgresql.service
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.jetbrains.exposed.sql.andWhere
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import ru.shvets.telegram.bot.common.model.TodoId
 import ru.shvets.telegram.bot.common.model.Todo
@@ -39,8 +37,8 @@ class TodoService(
         TODO("Not yet implemented")
     }
 
-    override suspend fun delete(todoId: TodoId): Boolean {
-        TODO("Not yet implemented")
+    override suspend fun delete(todoId: TodoId): Boolean = dbQuery{
+        TodoTable.deleteWhere { TodoTable.id eq todoId.asString().toLong() } > 0
     }
 
     override suspend fun search(userId: Int?): List<Todo> = dbQuery {

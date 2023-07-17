@@ -5,7 +5,6 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
 import ru.shvets.telegram.bot.common.helper.HELP_TEXT
 import ru.shvets.telegram.bot.common.helper.SORRY_TEXT
-import ru.shvets.telegram.bot.common.repo.TodoRepository
 
 /**
  * @author  Oleg Shvets
@@ -36,7 +35,7 @@ fun getCommandResponse(chatId: String, text: String, firstName: String,): SendMe
 private fun handleStartCommand(chatId: String, firstName: String): SendMessage {
     val text = EmojiParser
         .parseToUnicode("Привет, _${firstName}_! :wave: Я - Telegram bot :blush: \n*Доступные команды:*")
-    return sendMessage(chatId = chatId, text = text, keyboard = getInlineKeyboard())
+    return sendMessage(chatId = chatId, text = text, keyboard = getInlineKeyboardMenu())
 }
 
 private fun handleHelpCommand(chatId: String): SendMessage {
@@ -51,8 +50,8 @@ private fun handleNotFoundCommand(chatId: String): SendMessage {
     return sendMessage(chatId = chatId, text = "*${SORRY_TEXT}*")
 }
 
-private fun getInlineKeyboard(): InlineKeyboardMarkup {
-    val menuButton = getButton(text = "Go to Todos", callbackData = CallbackCommand.MENU_TODO.command)
+private fun getInlineKeyboardMenu(): InlineKeyboardMarkup {
+    val menuButton = getButton(text = "Go to Todos", callbackData = CommandCallback.MENU.command)
     val requireButton = getButton(text = "Go to require", callbackData = "require")
     val rowButtons1 = getRow(menuButton, requireButton)
 

@@ -8,4 +8,5 @@ package ru.shvets.telegram.bot.common.model
 
 object Context {
     var status: TodoStatusType = TodoStatusType.NONE
+    var current: Todo? = null
 }

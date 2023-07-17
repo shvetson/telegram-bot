@@ -15,6 +15,7 @@ import ru.shvets.telegram.bot.common.helper.SET_LABEL
 import ru.shvets.telegram.bot.common.helper.START_LABEL
 import ru.shvets.telegram.bot.common.model.Context
 import ru.shvets.telegram.bot.common.model.Todo
+import ru.shvets.telegram.bot.common.model.TodoId
 import ru.shvets.telegram.bot.common.model.TodoStatusType
 import ru.shvets.telegram.bot.common.repo.TodoRepository
 import ru.shvets.telegram.bot.log.Logger
@@ -66,8 +67,11 @@ class BotService(appSettings: AppSettings) : TelegramLongPollingBot(), Logger {
                 }
             } else if (matcherTodoCommand.find()) {
                 val id = text.substring(6)
-                execute(sendMessage(chatId, id))
-                //TODO добавить меню - read, update, delete
+                val todo = runBlocking { todoService.read(TodoId(id))}
+                Context.current = todo
+                val sb = StringBuilder()
+                sb.append(todo?.title).append("\n").append(todo?.content)
+                execute(sendMessage(chatId = chatId, text = sb.toString(), keyboard = getInlineKeyboardTodoCommand()))
             } else {
                 val sendMessage = getCommandResponse(chatId = chatId, text = text, firstName = firstName)
                 execute(sendMessage)
@@ -77,8 +81,9 @@ class BotService(appSettings: AppSettings) : TelegramLongPollingBot(), Logger {
             val callbackQuery = update.callbackQuery
             val data = callbackQuery.data
             val message = callbackQuery.message
+            val msg = getCallBackCommandResponse(data = data, message = message, todoItemStep = todoItemStep, todoService = todoService)
 
-            when (val msg = getCallBackCommandResponse(data = data, message = message, todoItemStep = todoItemStep, todoService = todoService)) {
+            when (msg) {
                 is SendMessage -> execute(msg as SendMessage)
                 is EditMessageText -> execute(msg as EditMessageText)
             }
@@ -101,10 +106,19 @@ class BotService(appSettings: AppSettings) : TelegramLongPollingBot(), Logger {
 }
 
 private fun getInlineKeyboardTodoAndMenu(): InlineKeyboardMarkup {
-    val menuButton = getButton(text = "Go to Todos", callbackData = CallbackCommand.MENU_TODO.command)
+    val menuButton = getButton(text = "Go to Todos", callbackData = CommandCallback.MENU.command)
     val todoListButton = getButtonWithEmoji("ToDo List", CommandTodo.LIST.command, ":ledger:")
 
     val rowButtons = getRow(menuButton, todoListButton)
+    val collection = getCollection(rowButtons)
+    return getKeyboard(collection)
+}
+
+private fun getInlineKeyboardTodoCommand(): InlineKeyboardMarkup {
+    val deleteButton = getButton(text = "Delete", callbackData = CommandTodo.DELETE.command)
+    val updateButton = getButton(text = "Update", callbackData = CommandTodo.UPDATE.command)
+
+    val rowButtons = getRow(deleteButton, updateButton)
     val collection = getCollection(rowButtons)
     return getKeyboard(collection)
 }

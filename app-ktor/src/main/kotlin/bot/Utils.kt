@@ -60,7 +60,7 @@ fun sendMessage(chatId: String, text: String, keyboard: Any? = null): SendMessag
     return sendMessage
 }
 
-fun editMessageText(chatId: String, text: String, messageId: Int, keyboard: InlineKeyboardMarkup? = null): EditMessageText {
+fun editMessage(chatId: String, text: String, messageId: Int, keyboard: InlineKeyboardMarkup? = null): EditMessageText {
     val editMessageText = EditMessageText()
     editMessageText.apply {
         this.text = text

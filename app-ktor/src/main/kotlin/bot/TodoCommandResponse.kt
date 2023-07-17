@@ -46,10 +46,11 @@ fun getTodoCommandResponse(
 //        CommandTodo.UPDATE.command -> {
 //
 //        }
-//
-//        CommandTodo.DELETE.command -> {
-//
-//        }
+
+        CommandTodo.DELETE.command -> {
+            log.info("Request to delete the item")
+            handleDeleteCommand(chatId, messageId, todoService)
+        }
 
         else -> {
             handleNotFoundCommand(chatId)
@@ -71,17 +72,20 @@ private fun handleListCommand(chatId: String, messageId: Int, todoService: TodoR
         sb.append("$counter \n")
             .append("${item.title}\n")
             .append("${item.content}\n")
-            .append(item.createdAt
-                            .toLocalDateTime(TimeZone.currentSystemDefault())
-                            .toJavaLocalDateTime()
-                            .format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")))
-            .append(" /todos_${item.id.asString()}\n\n")
+            .append(
+                item.createdAt
+                    .toLocalDateTime(TimeZone.currentSystemDefault())
+                    .toJavaLocalDateTime()
+                    .format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))
+            )
+            .append(" /todos${item.id.asString()}\n")
+            .append("\n")
     }
-    return editMessageText(chatId = chatId, text = sb.toString(), messageId = messageId)
+    return editMessage(chatId = chatId, text = sb.toString(), messageId = messageId)
 }
 
 private fun handleCreateCommand(chatId: String, messageId: Int, todoItemStep: MutableMap<Long, Todo>): EditMessageText {
-    val editMessageText = editMessageText(chatId, "Send *Title* ->", messageId)
+    val editMessageText = editMessage(chatId = chatId, text = "Send *Title* ->", messageId = messageId)
     Context.status = TodoStatusType.TITLE
 
     val todo = Todo(
@@ -91,4 +95,10 @@ private fun handleCreateCommand(chatId: String, messageId: Int, todoItemStep: Mu
 
     todoItemStep[chatId.toLong()] = todo
     return editMessageText
+}
+
+private fun handleDeleteCommand(chatId: String, messageId: Int, todoService: TodoRepository): EditMessageText {
+    val todo = Context.current
+    runBlocking { todo?.let { todoService.delete(it.id) } }
+    return editMessage(chatId = chatId, text = "Todo deleted", messageId = messageId)
 }

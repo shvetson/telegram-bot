@@ -16,14 +16,14 @@ fun getCallBackCommandResponse(data: String, message: Message, todoItemStep: Mut
 
     val patternTodoCommand: Pattern = Pattern.compile("^/todos/")
     val matcherTodoCommand: Matcher = patternTodoCommand.matcher(data)
-    val cmd  = if (matcherTodoCommand.find()) CallbackCommand.TODO.command else data
+    val cmd  = if (matcherTodoCommand.find()) CommandCallback.TODO.command else data
 
     return when (cmd) {
-        CallbackCommand.MENU_TODO.command -> {
+        CommandCallback.MENU.command -> {
             handleMenuTodoCommand(chatId, messageId)
         }
 
-        CallbackCommand.TODO.command -> {
+        CommandCallback.TODO.command -> {
             getTodoCommandResponse(data, message, todoItemStep, todoService)
         }
 
@@ -38,7 +38,7 @@ private fun handleNotFoundCommand(chatId: String): SendMessage {
 }
 
 private fun handleMenuTodoCommand(chatId: String, messageId: Int): EditMessageText {
-    return editMessageText(chatId = chatId, text = "*Todo service*", messageId = messageId, keyboard = getInlineKeyboardTodoCommand())
+    return editMessage(chatId = chatId, text = "*Todo service*", messageId = messageId, keyboard = getInlineKeyboardTodoCommand())
 }
 
 private fun getInlineKeyboardTodoCommand(): InlineKeyboardMarkup {
