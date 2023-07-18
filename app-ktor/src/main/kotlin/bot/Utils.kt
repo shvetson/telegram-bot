@@ -45,20 +45,20 @@ fun getKeyboard(collection: List<List<InlineKeyboardButton>>): InlineKeyboardMar
     return inlineKeyboardMarkup
 }
 
-fun sendMessage(chatId: String, text: String, keyboard: Any? = null): SendMessage {
-    val sendMessage = SendMessage(chatId, text)
-    sendMessage.apply {
-        parseMode = ParseMode.MARKDOWN
-        disableWebPagePreview
-        replyMarkup =
-            when (keyboard) {
-                is InlineKeyboardMarkup -> keyboard as InlineKeyboardMarkup
-                is ReplyKeyboardMarkup -> keyboard as ReplyKeyboardMarkup
-                else -> null
-            }
-    }
-    return sendMessage
-}
+//fun sendMessage(chatId: String, text: String, keyboard: Any? = null): SendMessage {
+//    val sendMessage = SendMessage(chatId, text)
+//    sendMessage.apply {
+//        parseMode = ParseMode.MARKDOWN
+//        disableWebPagePreview
+//        replyMarkup =
+//            when (keyboard) {
+//                is InlineKeyboardMarkup -> keyboard as InlineKeyboardMarkup
+//                is ReplyKeyboardMarkup -> keyboard as ReplyKeyboardMarkup
+//                else -> null
+//            }
+//    }
+//    return sendMessage
+//}
 
 fun editMessage(chatId: String, text: String, messageId: Int, keyboard: InlineKeyboardMarkup? = null): EditMessageText {
     val editMessageText = EditMessageText()
@@ -70,4 +70,20 @@ fun editMessage(chatId: String, text: String, messageId: Int, keyboard: InlineKe
         replyMarkup = keyboard
     }
     return editMessageText
+}
+
+fun sendMessage(chatId: String, text: String, keyboard: Any? = null): SendMessage {
+    val replyKeyboard = when (keyboard) {
+        is InlineKeyboardMarkup -> keyboard as InlineKeyboardMarkup
+        is ReplyKeyboardMarkup -> keyboard as ReplyKeyboardMarkup
+        else -> null
+    }
+
+    return SendMessage.builder()
+        .chatId(chatId)
+        .text(text)
+        .parseMode(ParseMode.MARKDOWN)
+        .disableWebPagePreview(true)
+        .replyMarkup(replyKeyboard)
+        .build()
 }
