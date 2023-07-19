@@ -50,30 +50,42 @@ class BotService(appSettings: AppSettings) : TelegramLongPollingBot(), Logger {
                 if (Context.status == TodoStatusType.TITLE) {
                     val todoItem = todoItemStep[chatId.toLong()]
                     todoItem?.title = text
-
                     Context.status = TodoStatusType.CONTENT
                     execute(sendMessage(chatId, "*Title*: $text\nSend *Content* ->"))
                 } else if (Context.status == TodoStatusType.CONTENT) {
                     val todoItem = todoItemStep[chatId.toLong()]
                     todoItem?.content = text
-
                     Context.status = TodoStatusType.FINISHED
                     todoItemStep.clear()
-
                     runBlocking { todoItem?.let { todoService.create(it) } }
-                    val msg = "*Title*: ${todoItem?.title}\n*Content*: $text\nCreate Todo finished."
-                    val sendMessage = sendMessage(chatId = chatId, text = msg, keyboard = getInlineKeyboardTodoAndMenu())
+                    val msg = "*Title*: ${todoItem?.title}\n*Content*: $text\n_Create Todo finished._"
+                    val sendMessage = sendMessage(
+                        chatId = chatId,
+                        text = msg,
+                        keyboard = getInlineKeyboardMenuAndTodo()
+                    )
                     execute(sendMessage)
                 }
+                // обработка выбранного todo из списка
             } else if (matcherTodoCommand.find()) {
                 val id = text.substring(6)
-                val todo = runBlocking { todoService.read(TodoId(id))}
+                val todo = runBlocking { todoService.read(TodoId(id)) }
                 Context.current = todo
                 val sb = StringBuilder()
                 sb.append(todo?.title).append("\n").append(todo?.content)
-                execute(sendMessage(chatId = chatId, text = sb.toString(), keyboard = getInlineKeyboardTodoCommand()))
+                val sendMessage = sendMessage(
+                    chatId = chatId,
+                    text = sb.toString(),
+                    keyboard = getInlineKeyboardTodoCommand()
+                )
+                execute(sendMessage)
             } else {
-                val sendMessage = getCommandResponse(chatId = chatId, text = text, firstName = firstName)
+                // обработка выбранной команды из основного меню
+                val sendMessage = getCommandResponse(
+                    chatId = chatId,
+                    text = text,
+                    firstName = firstName
+                )
                 execute(sendMessage)
             }
 
@@ -81,18 +93,29 @@ class BotService(appSettings: AppSettings) : TelegramLongPollingBot(), Logger {
             val callbackQuery = update.callbackQuery
             val data = callbackQuery.data
             val message = callbackQuery.message
-            val msg = getCallBackCommandResponse(data = data, message = message, todoItemStep = todoItemStep, todoService = todoService)
+            val msg = getCallBackCommandResponse(
+                data = data,
+                message = message,
+                todoItemStep = todoItemStep,
+                todoService = todoService
+            )
 
             when (msg) {
                 is SendMessage -> execute(msg as SendMessage)
                 is EditMessageText -> execute(msg as EditMessageText)
             }
+            // обработка полученного файла - документа
         } else if (update?.hasMessage() == true && update.message?.hasDocument() == true) {
             val file = update.message.document
             val name = file.fileName
             val size = file.fileSize
 
-            execute(sendMessage(chatId = chatId, text = "File - $name\nSize - $size"))
+            execute(
+                sendMessage(
+                    chatId = chatId,
+                    text = "File - $name\nSize - $size"
+                )
+            )
         }
     }
 
@@ -105,7 +128,7 @@ class BotService(appSettings: AppSettings) : TelegramLongPollingBot(), Logger {
     }
 }
 
-private fun getInlineKeyboardTodoAndMenu(): InlineKeyboardMarkup {
+private fun getInlineKeyboardMenuAndTodo(): InlineKeyboardMarkup {
     val menuButton = getButton(text = "Go to Todos", callbackData = CommandCallback.MENU.command)
     val todoListButton = getButtonWithEmoji("ToDo List", CommandTodo.LIST.command, ":ledger:")
 
@@ -115,8 +138,8 @@ private fun getInlineKeyboardTodoAndMenu(): InlineKeyboardMarkup {
 }
 
 private fun getInlineKeyboardTodoCommand(): InlineKeyboardMarkup {
-    val deleteButton = getButton(text = "Delete", callbackData = CommandTodo.DELETE.command)
     val updateButton = getButton(text = "Update", callbackData = CommandTodo.UPDATE.command)
+    val deleteButton = getButtonWithEmoji(text = "Delete", callbackData = CommandTodo.DELETE.command, ":x:")
 
     val rowButtons = getRow(deleteButton, updateButton)
     val collection = getCollection(rowButtons)

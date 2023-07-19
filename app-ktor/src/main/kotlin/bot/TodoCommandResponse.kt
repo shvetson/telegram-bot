@@ -72,12 +72,7 @@ private fun handleListCommand(chatId: String, messageId: Int, todoService: TodoR
         sb.append("$counter \n")
             .append("${item.title}\n")
             .append("${item.content}\n")
-            .append(
-                item.createdAt
-                    .toLocalDateTime(TimeZone.currentSystemDefault())
-                    .toJavaLocalDateTime()
-                    .format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))
-            )
+            .append(item.createdAt.kotlinInstantToDateString())
             .append(" /todos${item.id.asString()}\n")
             .append("\n")
     }
