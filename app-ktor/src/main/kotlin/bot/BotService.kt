@@ -132,6 +132,7 @@ private fun getInlineKeyboardMenuAndTodo(): InlineKeyboardMarkup {
     val menuButton = getButton(text = "Go to Todos", callbackData = CommandCallback.MENU.command)
     val todoListButton = getButtonWithEmoji("ToDo List", CommandTodo.LIST.command, ":ledger:")
 
+
     val rowButtons = getRow(menuButton, todoListButton)
     val collection = getCollection(rowButtons)
     return getKeyboard(collection)
@@ -139,9 +140,10 @@ private fun getInlineKeyboardMenuAndTodo(): InlineKeyboardMarkup {
 
 private fun getInlineKeyboardTodoCommand(): InlineKeyboardMarkup {
     val updateButton = getButton(text = "Update", callbackData = CommandTodo.UPDATE.command)
-    val deleteButton = getButtonWithEmoji(text = "Delete", callbackData = CommandTodo.DELETE.command, ":x:")
+    val deleteButton = getButton(text = "Delete", callbackData = CommandTodo.DELETE.command)
+    val cancelButton = getButtonWithEmoji(text = "Cancel", callbackData = CommandCallback.CANCEL.command,":x:")
 
-    val rowButtons = getRow(deleteButton, updateButton)
+    val rowButtons = getRow(updateButton, deleteButton, cancelButton)
     val collection = getCollection(rowButtons)
     return getKeyboard(collection)
 }

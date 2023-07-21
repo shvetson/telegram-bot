@@ -9,4 +9,5 @@ package ru.shvets.telegram.bot.app.ktor.bot
 enum class CommandCallback(val command: String) {
     MENU("menu"),
     TODO("/todo"),
+    CANCEL("cancel")
 }

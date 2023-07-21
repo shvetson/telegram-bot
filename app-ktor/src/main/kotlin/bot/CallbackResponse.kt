@@ -27,6 +27,10 @@ fun getCallBackCommandResponse(data: String, message: Message, todoItemStep: Mut
             getTodoCommandResponse(data, message, todoItemStep, todoService)
         }
 
+        CommandCallback.CANCEL.command -> {
+            handleMenuTodoCommand(chatId, messageId)
+        }
+
         else -> {
             handleNotFoundCommand(chatId)
         }
@@ -45,9 +49,8 @@ private fun getInlineKeyboardTodoCommand(): InlineKeyboardMarkup {
     val todoListButton = getButtonWithEmoji("ToDo List", CommandTodo.LIST.command, ":ledger:")
     val todoCreateItemButton = getButtonWithEmoji("Create New", CommandTodo.CREATE.command, ":new:")
 
-    val firstRow = getRow(todoListButton)
-    val secondRow = getRow(todoCreateItemButton)
+    val rowButtons = getRow(todoListButton, todoCreateItemButton)
 
-    val collection = getCollection(firstRow, secondRow)
+    val collection = getCollection(rowButtons)
     return getKeyboard(collection)
 }
