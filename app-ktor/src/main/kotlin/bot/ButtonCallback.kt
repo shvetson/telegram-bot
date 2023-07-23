@@ -6,7 +6,7 @@ package ru.shvets.telegram.bot.app.ktor.bot
  * @date  15.07.2023 16:28
  */
 
-enum class CommandCallback(val command: String) {
+enum class ButtonCallback(val button: String) {
     MENU("menu"),
     TODO("/todo"),
     CANCEL("cancel")

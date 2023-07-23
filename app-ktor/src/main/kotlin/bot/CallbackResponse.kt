@@ -10,47 +10,49 @@ import ru.shvets.telegram.bot.common.repo.TodoRepository
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-fun getCallBackCommandResponse(data: String, message: Message, todoItemStep: MutableMap<Long, Todo>, todoService: TodoRepository): Any {
+fun getCallBackButtonResponse(
+    data: String,
+    message: Message,
+    todoService: TodoRepository,
+): Any {
     val chatId = message.chat.id.toString()
     val messageId = message.messageId
 
     val patternTodoCommand: Pattern = Pattern.compile("^/todos/")
     val matcherTodoCommand: Matcher = patternTodoCommand.matcher(data)
-    val cmd  = if (matcherTodoCommand.find()) CommandCallback.TODO.command else data
+    val cmd = if (matcherTodoCommand.find()) ButtonCallback.TODO.button else data
 
     return when (cmd) {
-        CommandCallback.MENU.command -> {
-            handleMenuTodoCommand(chatId, messageId)
+        ButtonCallback.MENU.button -> {
+            handleMenuTodoButton(chatId, messageId)
         }
 
-        CommandCallback.TODO.command -> {
-            getTodoCommandResponse(data, message, todoItemStep, todoService)
+        ButtonCallback.TODO.button -> {
+            getTodoButtonResponse(data, message, todoService)
         }
 
-        CommandCallback.CANCEL.command -> {
-            handleMenuTodoCommand(chatId, messageId)
+        ButtonCallback.CANCEL.button -> {
+            handleMenuTodoButton(chatId, messageId)
         }
 
         else -> {
-            handleNotFoundCommand(chatId)
+            handleNotFoundButton(chatId)
         }
     }
 }
 
-private fun handleNotFoundCommand(chatId: String): SendMessage {
-    return sendMessage(chatId = chatId, text = "*$SORRY_TEXT*")
+private fun handleNotFoundButton(chatId: String): SendMessage {
+    return sendMessage(
+        chatId = chatId,
+        text = "*$SORRY_TEXT*"
+    )
 }
 
-private fun handleMenuTodoCommand(chatId: String, messageId: Int): EditMessageText {
-    return editMessage(chatId = chatId, text = "*Todo service*", messageId = messageId, keyboard = getInlineKeyboardTodoCommand())
-}
-
-private fun getInlineKeyboardTodoCommand(): InlineKeyboardMarkup {
-    val todoListButton = getButtonWithEmoji("ToDo List", CommandTodo.LIST.command, ":ledger:")
-    val todoCreateItemButton = getButtonWithEmoji("Create New", CommandTodo.CREATE.command, ":new:")
-
-    val rowButtons = getRow(todoListButton, todoCreateItemButton)
-
-    val collection = getCollection(rowButtons)
-    return getKeyboard(collection)
+private fun handleMenuTodoButton(chatId: String, messageId: Int): EditMessageText {
+    return editMessage(
+        chatId = chatId,
+        text = "*Menu*",
+        messageId = messageId,
+        keyboard = getInlineKeyboardTodoButtonsListAndNew()
+    )
 }

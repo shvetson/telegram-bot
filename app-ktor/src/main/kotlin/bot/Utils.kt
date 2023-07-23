@@ -81,3 +81,109 @@ fun Instant.kotlinInstantToDateString(): String {
         .toJavaLocalDateTime()
         .format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")))
 }
+
+fun getInlineKeyboardMenu(): InlineKeyboardMarkup {
+    val menuButton = getButton(
+        text = "Go to Todos",
+        callbackData = ButtonCallback.MENU.button
+    )
+    val requireButton = getButton(
+        text = "Go to require",
+        callbackData = "require"
+    )
+    val rowButtons1 = getRow(menuButton, requireButton)
+
+    val testButton = getButton(
+        text = "Go to test",
+        callbackData = "test"
+    )
+    val rowButtons2 = getRow(testButton)
+    val collection = getCollection(rowButtons1, rowButtons2)
+    return getKeyboard(collection)
+}
+
+// меню 2-го уровня - возврат на уровень выше, вывод всех записей, поиск записей
+fun getInlineKeyboardMenuAndTodo(): InlineKeyboardMarkup {
+    val menuButton = getButton(
+        text = "Menu",
+        callbackData = ButtonCallback.MENU.button
+    )
+    val todoListButton = getButtonWithEmoji(
+        text = "List",
+        callbackData = ButtonTodo.LIST.button,
+        emoji = ":ledger:"
+    )
+    val searchButton = getButtonWithEmoji(
+        text = "Search",
+        callbackData = ButtonTodo.SEARCH.button,
+        emoji = ":mag_right:"
+    )
+
+    val rowButtons = getRow(menuButton, todoListButton, searchButton)
+    val collection = getCollection(rowButtons)
+    return getKeyboard(collection)
+}
+
+fun getInlineKeyboardTodoButtonsListAndNew(): InlineKeyboardMarkup {
+    val todoListButton = getButtonWithEmoji(
+        text = "List",
+        callbackData = ButtonTodo.LIST.button,
+        emoji = ":ledger:"
+    )
+    val newButton = getButton(
+        text = "New",
+        callbackData = ButtonTodo.CREATE.button
+    )
+
+    val rowButtons = getRow(todoListButton, newButton)
+    val collection = getCollection(rowButtons)
+    return getKeyboard(collection)
+}
+
+// меню команд для обработки записи
+fun getInlineKeyboardTodoButtonsUpdateDeleteCancel(): InlineKeyboardMarkup {
+    val updateButton = getButton(
+        text = "Update",
+        callbackData = ButtonTodo.UPDATE.button
+    )
+    val deleteButton = getButton(
+        text = "Delete",
+        callbackData = ButtonTodo.DELETE.button
+    )
+    val cancelButton = getButtonWithEmoji(
+        text = "Cancel",
+        callbackData = ButtonCallback.CANCEL.button,
+        emoji = ":x:"
+    )
+
+    val rowButtons = getRow(updateButton, deleteButton, cancelButton)
+    val collection = getCollection(rowButtons)
+    return getKeyboard(collection)
+}
+
+// меню команд для работы с записями после их вывода списком
+fun getInlineKeyboardTodoButtonsMenuAndSearch(): InlineKeyboardMarkup {
+    val menuButton = getButton(
+        text = "Menu",
+        callbackData = ButtonCallback.MENU.button
+    )
+    val searchButton = getButtonWithEmoji(
+        text = "Search",
+        callbackData = ButtonTodo.SEARCH.button,
+        emoji = ":mag_right:"
+    )
+
+    val rowButtons = getRow(menuButton, searchButton)
+    val collection = getCollection(rowButtons)
+    return getKeyboard(collection)
+}
+
+fun getInlineKeyboardCancel(): InlineKeyboardMarkup {
+    val cancelButton = getButton(
+        text = "Cancel",
+        callbackData = ButtonCallback.CANCEL.button
+    )
+    val rowButtons = getRow(cancelButton)
+    val collection = getCollection(rowButtons)
+    return getKeyboard(collection)
+}
